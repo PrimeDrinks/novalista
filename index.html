@@ -13,32 +13,23 @@
   <style>
     /* Título "PEDIDOS ONLINE" com efeito neon + gradiente + contorno + sombra + animação */
     .titulo-destaque-neon {
-      font-size: 2.1rem;                 /* ligeiramente maior */
+      font-size: 2.1rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-
-      /* GRADIENTE aplicado no texto */
       background: linear-gradient(90deg, #facc15, #fb923c, #f97316);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-
-      /* CONTORNO do texto */
       -webkit-text-stroke: 1px rgba(15, 23, 42, 0.9);
       text-stroke: 1px rgba(15, 23, 42, 0.9);
-
-      /* SOMBRA / GLOW estilo neon */
       text-shadow:
         0 0 6px rgba(250, 204, 21, 0.8),
         0 0 12px rgba(249, 115, 22, 0.7),
         0 0 18px rgba(249, 115, 22, 0.4);
-
-      /* ANIMAÇÃO pulsante */
       animation: neonPulse 1.8s ease-in-out infinite;
     }
 
-    /* Animação – respira, aumenta/brilha e volta */
     @keyframes neonPulse {
       0% {
         transform: scale(1);
@@ -482,11 +473,11 @@
       padding: 8px 0 14px;
     }
 
-    .customer-name-group,
     .delivery-neighborhood-group,
     .payment-group,
     .order-type-group,
-    .notes-group {
+    .notes-group,
+    .customer-name-group {
       margin-bottom: 10px;
       font-size: 0.85rem;
       display: flex;
@@ -496,7 +487,8 @@
 
     .delivery-neighborhood-group select,
     .payment-group select,
-    .order-type-group select {
+    .order-type-group select,
+    .customer-name-group input {
       padding: 8px 10px;
       border-radius: 8px;
       border: 1px solid #cbd5f5;
@@ -580,14 +572,10 @@
 
     <div class="cart-title">Seu pedido</div>
 
-    <!-- Nome do cliente -->
+    <!-- NOME DO CLIENTE -->
     <div class="customer-name-group">
       <label for="customerName">Seu nome:</label>
-      <input
-        id="customerName"
-        type="text"
-        placeholder="Ex.: João, Maria..."
-      />
+      <input id="customerName" type="text" placeholder="Digite seu nome (opcional, mas ajuda na entrega)" />
     </div>
 
     <!-- Tipo de pedido: Retirada / Entrega -->
@@ -665,7 +653,7 @@
   // Número do WhatsApp
   const WHATSAPP_NUMBER = "5585986847828";
 
-  // URL EXATA do Web App do Apps Script (já funcionando)
+  // URL do Web App do Apps Script (já funcionando)
   const ORDER_LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbwupOFNWwQOuz5dgDem1FP-kKUK0g427yDydUjGjeCLOMm4dB_PgqIq0tVv1vNkaNix/exec";
 
   // Links das planilhas (CSV)
@@ -742,10 +730,10 @@
     const atacadoPrice = Number(product.priceAtacado || 0);
 
     if (min > 0 && atacadoPrice > 0 && cartItem.quantity >= min) {
-      return atacadoPrice; // preço atacado
+      return atacadoPrice;
     }
 
-    return product.price || 0; // preço normal
+    return product.price || 0;
   }
 
   function formatCurrency(value) {
@@ -809,18 +797,15 @@
     const rows = parseCSV(csv);
 
     products = rows.map(row => {
-      // preço normal (varejo)
       const precoStr = row.preco || row["preco"] || "0";
       const price = parseFloat(precoStr.replace(".", "").replace(",", ".")) || 0;
 
       const estoqueStr = row.estoque || "0";
       const estoque = parseInt(estoqueStr, 10) || 0;
 
-      // preço atacado
       const precoAtacadoStr = row.preco_atacado || row["preco_atacado"] || "0";
       const priceAtacado = parseFloat(precoAtacadoStr.replace(".", "").replace(",", ".")) || 0;
 
-      // quantidade mínima para atacado
       const minAtacadoStr = row.quantidade_minima_atacado || row["quantidade_minima_atacado"] || "0";
       const atacadoMinQty = parseInt(minAtacadoStr, 10) || 0;
 
@@ -834,9 +819,9 @@
       return {
         id: row.id,
         name: row.nome,
-        price,                 // preço normal
-        priceAtacado,          // preço atacado
-        atacadoMinQty,         // quantidade mínima atacado
+        price,
+        priceAtacado,
+        atacadoMinQty,
         category: row.categoria || "",
         estoque,
         image: img || "logo-prime.png",
@@ -867,7 +852,6 @@
       }
     });
 
-    // Bairros
     const neighborhoodSelect = document.getElementById("deliveryNeighborhood");
     if (neighborhoodSelect) {
       neighborhoodSelect.innerHTML =
@@ -880,7 +864,6 @@
       });
     }
 
-    // Formas de pagamento
     const paymentSelect = document.getElementById("paymentMethod");
     if (paymentSelect && formaPagamentoTexto) {
       paymentSelect.innerHTML = '<option value="">Selecione</option>';
@@ -902,7 +885,6 @@
     select.innerHTML = '<option value="">Todas as categorias</option>';
     const categories = [...new Set(products.map(p => p.category))].filter(Boolean).sort();
 
-    // select
     categories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat;
@@ -910,7 +892,6 @@
       select.appendChild(option);
     });
 
-    // atalhos
     if (shortcutsContainer) {
       shortcutsContainer.innerHTML = "";
 
@@ -1204,26 +1185,19 @@
     btn.disabled = !cart.length || !isOpenNow;
   }
 
-  // Envia pedido para a planilha (Apps Script)
-  function sendOrderToLog(orderData) {
-    if (!ORDER_LOG_ENDPOINT) {
-      console.warn("ORDER_LOG_ENDPOINT não definido.");
-      return;
-    }
-
+  // Envia os dados do pedido para o Apps Script
+  async function sendOrderToLog(orderData) {
     try {
-      fetch(ORDER_LOG_ENDPOINT, {
+      await fetch(ORDER_LOG_ENDPOINT, {
         method: "POST",
-        mode: "no-cors", // evitar bloqueio do navegador
         headers: {
-          "Content-Type": "text/plain;charset=utf-8"
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(orderData)
-      }).catch(err => {
-        console.error("Erro de rede ao registrar pedido (no-cors):", err);
+        body: JSON.stringify(orderData),
+        mode: "no-cors" // evita problema de CORS no GitHub Pages
       });
     } catch (err) {
-      console.error("Erro ao chamar endpoint de pedidos:", err);
+      console.error("Erro de rede ao registrar pedido:", err);
     }
   }
 
@@ -1235,30 +1209,32 @@
       return;
     }
 
+    const nameEl = document.getElementById("customerName");
+    const customerName = nameEl ? nameEl.value.trim() : "";
+
     const orderType = getOrderType();
     const neighborhoodSelect = document.getElementById("deliveryNeighborhood");
     const Localidade = neighborhoodSelect ? neighborhoodSelect.value : "";
     const paymentMethod = getPaymentMethod();
     const notesEl = document.getElementById("orderNotes");
     const notes = notesEl ? notesEl.value.trim() : "";
-    const nameEl = document.getElementById("customerName");
-    const customerName = nameEl ? nameEl.value.trim() : "";
 
     let lines = [];
     lines.push("Olá! Gostaria de fazer o seguinte pedido:");
     if (customerName) {
-      lines.push(`Nome: ${customerName}`);
+      lines.push("");
+      lines.push("Cliente: " + customerName);
     }
     lines.push("");
 
     let subtotal = 0;
-
     const itemsForLog = [];
 
     cart.forEach(item => {
       const unitPrice = getEffectiveUnitPrice(item);
       const lineTotal = unitPrice * item.quantity;
       subtotal += lineTotal;
+
       lines.push(`- ${item.quantity} x ${item.name} (${formatCurrency(unitPrice)}) = ${formatCurrency(lineTotal)}`);
 
       itemsForLog.push({
@@ -1322,7 +1298,10 @@
       lines.push(notes);
     }
 
-    // Dados enviados para a planilha
+    const text = lines.join("\n");
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+
+    // monta os dados para a planilha (inclui nome do cliente)
     const orderData = {
       customerName,
       paymentMethod,
@@ -1330,12 +1309,10 @@
       items: itemsForLog
     };
 
-    // registra na planilha
+    // registra na planilha (em background)
     sendOrderToLog(orderData);
 
-    const text = lines.join("\n");
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-
+    // abre o WhatsApp
     window.open(url, "_blank");
   }
 
