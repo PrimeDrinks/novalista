@@ -13,23 +13,32 @@
   <style>
     /* Título "PEDIDOS ONLINE" com efeito neon + gradiente + contorno + sombra + animação */
     .titulo-destaque-neon {
-      font-size: 2.1rem;
+      font-size: 2.1rem;                 /* ligeiramente maior */
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+
+      /* GRADIENTE aplicado no texto */
       background: linear-gradient(90deg, #facc15, #fb923c, #f97316);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+
+      /* CONTORNO do texto */
       -webkit-text-stroke: 1px rgba(15, 23, 42, 0.9);
       text-stroke: 1px rgba(15, 23, 42, 0.9);
+
+      /* SOMBRA / GLOW estilo neon */
       text-shadow:
         0 0 6px rgba(250, 204, 21, 0.8),
         0 0 12px rgba(249, 115, 22, 0.7),
         0 0 18px rgba(249, 115, 22, 0.4);
+
+      /* ANIMAÇÃO pulsante */
       animation: neonPulse 1.8s ease-in-out infinite;
     }
 
+    /* Animação – respira, aumenta/brilha e volta */
     @keyframes neonPulse {
       0% {
         transform: scale(1);
@@ -65,6 +74,7 @@
       background: #f3f4f6;
     }
 
+    /* HEADER */
     header {
       background: linear-gradient(135deg, #0f4fa8, #1d73d6);
       color: white;
@@ -108,6 +118,7 @@
       opacity: 0.95;
     }
 
+    /* PROMOÇÃO EM DESTAQUE */
     .promo-section {
       max-width: 900px;
       margin: 10px auto 0;
@@ -182,6 +193,7 @@
       filter: brightness(0.93);
     }
 
+    /* FILTROS (busca + categoria) */
     .filters {
       max-width: 900px;
       margin: 14px auto 0;
@@ -220,6 +232,7 @@
       }
     }
 
+    /* ATALHOS POR CATEGORIA */
     .category-shortcuts {
       max-width: 900px;
       margin: 4px auto 0;
@@ -256,6 +269,7 @@
       gap: 14px;
     }
 
+    /* CARDS */
     .card {
       background: white;
       border-radius: 12px;
@@ -352,6 +366,7 @@
       cursor: not-allowed;
     }
 
+    /* CARRINHO */
     .cart {
       max-width: 900px;
       margin: 0 auto 24px;
@@ -468,16 +483,16 @@
     }
 
     .customer-name-group,
-.delivery-neighborhood-group,
-.payment-group,
-.order-type-group,
-.notes-group {
-  margin-bottom: 10px;
-  font-size: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+    .delivery-neighborhood-group,
+    .payment-group,
+    .order-type-group,
+    .notes-group {
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
 
     .delivery-neighborhood-group select,
     .payment-group select,
@@ -534,11 +549,13 @@
   </div>
 </header>
 
+<!-- PROMOÇÃO EM DESTAQUE (combo) -->
 <section id="promoSection" class="promo-section">
   <div class="promo-title">🔥 Promoção em destaque</div>
   <div id="promoCard" class="promo-card"></div>
 </section>
 
+<!-- FILTROS: BUSCA + CATEGORIA -->
 <div class="filters">
   <input
     id="searchInput"
@@ -550,16 +567,30 @@
   </select>
 </div>
 
+<!-- ATALHOS POR CATEGORIA -->
 <div class="category-shortcuts" id="categoryShortcuts"></div>
 
 <main>
+  <!-- LISTA DE PRODUTOS -->
   <div class="grid" id="productList"></div>
 
+  <!-- CARRINHO -->
   <section class="cart">
     <div id="storeStatus" class="store-status"></div>
 
     <div class="cart-title">Seu pedido</div>
 
+    <!-- Nome do cliente -->
+    <div class="customer-name-group">
+      <label for="customerName">Seu nome:</label>
+      <input
+        id="customerName"
+        type="text"
+        placeholder="Ex.: João, Maria..."
+      />
+    </div>
+
+    <!-- Tipo de pedido: Retirada / Entrega -->
     <div class="order-type-group">
       <label for="orderType">Como você prefere receber?</label>
       <select id="orderType">
@@ -568,16 +599,8 @@
         <option value="retirada">Retirar no local</option>
       </select>
     </div>
-<!-- Nome do cliente -->
-<div class="customer-name-group">
-  <label for="customerName">Seu nome:</label>
-  <input
-    id="customerName"
-    type="text"
-    placeholder="Ex.: João, Maria..."
-  />
-</div>
 
+    <!-- Forma de pagamento -->
     <div class="payment-group">
       <label for="paymentMethod">Forma de pagamento:</label>
       <select id="paymentMethod">
@@ -586,6 +609,7 @@
       <small>Pagamentos no crédito têm acréscimo da maquininha sobre o total (produtos + entrega).</small>
     </div>
 
+    <!-- Localidade -->
     <div class="delivery-neighborhood-group">
       <label for="deliveryNeighborhood">Localidade para entrega:</label>
       <select id="deliveryNeighborhood">
@@ -595,6 +619,7 @@
 
     <div id="cartItems" class="cart-items"></div>
 
+    <!-- Subtotal / Entrega / Crédito / Total -->
     <div class="cart-summary-line">
       <span>Subtotal:</span>
       <span id="cartSubtotal">R$ 0,00</span>
@@ -613,6 +638,7 @@
       <strong id="cartTotal">R$ 0,00</strong>
     </div>
 
+    <!-- Observações -->
     <div class="notes-group">
       <label for="orderNotes">Observações do pedido (opcional):</label>
       <textarea
@@ -639,7 +665,7 @@
   // Número do WhatsApp
   const WHATSAPP_NUMBER = "5585986847828";
 
-  // URL EXATA do Web App do Apps Script
+  // URL EXATA do Web App do Apps Script (já funcionando)
   const ORDER_LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbwupOFNWwQOuz5dgDem1FP-kKUK0g427yDydUjGjeCLOMm4dB_PgqIq0tVv1vNkaNix/exec";
 
   // Links das planilhas (CSV)
@@ -649,25 +675,26 @@
   const TAXAS_SHEET_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcX1AMiR5abZ4ZS8R0dRDRCEuFA7Z8F4pxdKnytA4KXSJMv28X3at9GmElefI6fo78Qf04ljMWB2q0/pub?gid=1515986149&single=true&output=csv";
 
+  // Horário de funcionamento
   const SCHEDULE_TEXT =
     "Terça a Sábado: 8h às 23h; domingo 9h às 21h; segunda: fechado.";
 
   let isOpenNow = true;
 
   function isStoreOpen(now) {
-    const day = now.getDay();
+    const day = now.getDay(); // 0=Dom, 1=Seg...
     const hour = now.getHours() + now.getMinutes() / 60;
 
     switch (day) {
-      case 1:
+      case 1: // Segunda
         return false;
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
+      case 2: // Terça
+      case 3: // Quarta
+      case 4: // Quinta
+      case 5: // Sexta
+      case 6: // Sábado
         return hour >= 8 && hour < 23;
-      case 0:
+      case 0: // Domingo
         return hour >= 9 && hour < 21;
       default:
         return false;
@@ -696,6 +723,7 @@
     renderCart();
   }
 
+  // Estado carregado da planilha
   let products = [];
   let NEIGHBORHOODS = {};
   let formaPagamentoTexto = "";
@@ -703,31 +731,7 @@
   // Carrinho
   const cart = [];
 
-  // 🔹 Envia pedido para a planilha (Apps Script)
-  function sendOrderToLog(orderData) {
-  if (!ORDER_LOG_ENDPOINT) {
-    console.warn("ORDER_LOG_ENDPOINT não definido.");
-    return;
-  }
-
-  try {
-    fetch(ORDER_LOG_ENDPOINT, {
-      method: "POST",
-      mode: "no-cors", // importante para evitar bloqueio do navegador
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify(orderData)
-    }).catch(err => {
-      console.error("Erro de rede ao registrar pedido (no-cors):", err);
-    });
-  } catch (err) {
-    console.error("Erro ao chamar endpoint de pedidos:", err);
-  }
-}
-
-
-  // Decide qual preço usar (normal ou atacado)
+  // Decide qual preço usar (normal ou atacado) com base na quantidade no carrinho
   function getEffectiveUnitPrice(cartItem) {
     const product = products.find(p => p.id == cartItem.id);
     if (!product) {
@@ -738,10 +742,10 @@
     const atacadoPrice = Number(product.priceAtacado || 0);
 
     if (min > 0 && atacadoPrice > 0 && cartItem.quantity >= min) {
-      return atacadoPrice;
+      return atacadoPrice; // preço atacado
     }
 
-    return product.price || 0;
+    return product.price || 0; // preço normal
   }
 
   function formatCurrency(value) {
@@ -751,6 +755,7 @@
     });
   }
 
+  // Parser CSV
   function parseCSV(text) {
     const lines = text.trim().split(/\r?\n/);
     if (!lines.length) return [];
@@ -797,21 +802,25 @@
     return rows;
   }
 
+  // Carregar produtos da aba Produtos (com atacado)
   async function loadProductsFromSheet() {
     const res = await fetch(PRODUCTS_SHEET_URL);
     const csv = await res.text();
     const rows = parseCSV(csv);
 
     products = rows.map(row => {
+      // preço normal (varejo)
       const precoStr = row.preco || row["preco"] || "0";
       const price = parseFloat(precoStr.replace(".", "").replace(",", ".")) || 0;
 
       const estoqueStr = row.estoque || "0";
       const estoque = parseInt(estoqueStr, 10) || 0;
 
+      // preço atacado
       const precoAtacadoStr = row.preco_atacado || row["preco_atacado"] || "0";
       const priceAtacado = parseFloat(precoAtacadoStr.replace(".", "").replace(",", ".")) || 0;
 
+      // quantidade mínima para atacado
       const minAtacadoStr = row.quantidade_minima_atacado || row["quantidade_minima_atacado"] || "0";
       const atacadoMinQty = parseInt(minAtacadoStr, 10) || 0;
 
@@ -825,9 +834,9 @@
       return {
         id: row.id,
         name: row.nome,
-        price,
-        priceAtacado,
-        atacadoMinQty,
+        price,                 // preço normal
+        priceAtacado,          // preço atacado
+        atacadoMinQty,         // quantidade mínima atacado
         category: row.categoria || "",
         estoque,
         image: img || "logo-prime.png",
@@ -836,6 +845,7 @@
     });
   }
 
+  // Carregar bairros + taxa + forma_pagamento
   async function loadTaxasFromSheet() {
     const res = await fetch(TAXAS_SHEET_URL);
     const csv = await res.text();
@@ -857,6 +867,7 @@
       }
     });
 
+    // Bairros
     const neighborhoodSelect = document.getElementById("deliveryNeighborhood");
     if (neighborhoodSelect) {
       neighborhoodSelect.innerHTML =
@@ -869,6 +880,7 @@
       });
     }
 
+    // Formas de pagamento
     const paymentSelect = document.getElementById("paymentMethod");
     if (paymentSelect && formaPagamentoTexto) {
       paymentSelect.innerHTML = '<option value="">Selecione</option>';
@@ -890,6 +902,7 @@
     select.innerHTML = '<option value="">Todas as categorias</option>';
     const categories = [...new Set(products.map(p => p.category))].filter(Boolean).sort();
 
+    // select
     categories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat;
@@ -897,6 +910,7 @@
       select.appendChild(option);
     });
 
+    // atalhos
     if (shortcutsContainer) {
       shortcutsContainer.innerHTML = "";
 
@@ -941,6 +955,7 @@
     });
   }
 
+  // Promoção em destaque
   function renderPromo() {
     const promoSection = document.getElementById("promoSection");
     const promoCard = document.getElementById("promoCard");
@@ -1189,6 +1204,29 @@
     btn.disabled = !cart.length || !isOpenNow;
   }
 
+  // Envia pedido para a planilha (Apps Script)
+  function sendOrderToLog(orderData) {
+    if (!ORDER_LOG_ENDPOINT) {
+      console.warn("ORDER_LOG_ENDPOINT não definido.");
+      return;
+    }
+
+    try {
+      fetch(ORDER_LOG_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors", // evitar bloqueio do navegador
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(orderData)
+      }).catch(err => {
+        console.error("Erro de rede ao registrar pedido (no-cors):", err);
+      });
+    } catch (err) {
+      console.error("Erro ao chamar endpoint de pedidos:", err);
+    }
+  }
+
   function sendCartToWhatsApp() {
     if (!cart.length) return;
 
@@ -1206,22 +1244,29 @@
     const nameEl = document.getElementById("customerName");
     const customerName = nameEl ? nameEl.value.trim() : "";
 
-
     let lines = [];
     lines.push("Olá! Gostaria de fazer o seguinte pedido:");
     if (customerName) {
-    lines.push(`Nome: ${customerName}`);
-   }
-   lines.push("");
-
+      lines.push(`Nome: ${customerName}`);
+    }
+    lines.push("");
 
     let subtotal = 0;
+
+    const itemsForLog = [];
 
     cart.forEach(item => {
       const unitPrice = getEffectiveUnitPrice(item);
       const lineTotal = unitPrice * item.quantity;
       subtotal += lineTotal;
       lines.push(`- ${item.quantity} x ${item.name} (${formatCurrency(unitPrice)}) = ${formatCurrency(lineTotal)}`);
+
+      itemsForLog.push({
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: unitPrice,
+        totalItem: lineTotal
+      });
     });
 
     lines.push("");
@@ -1277,53 +1322,20 @@
       lines.push(notes);
     }
 
-  const orderData = {
-  customerName,
-  paymentMethod,
-  notes,
-  items: cart.map(item => {
-    const unitPrice = getEffectiveUnitPrice(item);
-    return {
-      name: item.name,
-      quantity: item.quantity,
-      unitPrice: unitPrice,
-      totalItem: unitPrice * item.quantity
-    };
-  })
-};
-
-// envia para a planilha
-sendOrderToLog(orderData);
-
-    const text = lines.join("\n");
-   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-   window.open(url, "_blank");
-
-
-
-    // 🔹 Monta dados para registro na planilha
+    // Dados enviados para a planilha
     const orderData = {
-  paymentMethod,
-  notes,
-  items: cart.map(item => {
-    const unitPrice = getEffectiveUnitPrice(item);
-    return {
-      name: item.name,
-      quantity: item.quantity,
-      unitPrice: unitPrice,
-      totalItem: unitPrice * item.quantity
+      customerName,
+      paymentMethod,
+      notes,
+      items: itemsForLog
     };
-  })
-};
 
-sendOrderToLog(orderData);
-window.open(url, "_blank");
-
-
-    // Envia para o Apps Script
+    // registra na planilha
     sendOrderToLog(orderData);
 
-    // Abre o WhatsApp
+    const text = lines.join("\n");
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+
     window.open(url, "_blank");
   }
 
@@ -1382,6 +1394,7 @@ window.open(url, "_blank");
   });
 </script>
 
+<!-- Registro do Service Worker para PWA -->
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
@@ -1396,4 +1409,3 @@ window.open(url, "_blank");
 
 </body>
 </html>
-
