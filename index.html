@@ -467,16 +467,17 @@
       padding: 8px 0 14px;
     }
 
-    .delivery-neighborhood-group,
-    .payment-group,
-    .order-type-group,
-    .notes-group {
-      margin-bottom: 10px;
-      font-size: 0.85rem;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .customer-name-group,
+.delivery-neighborhood-group,
+.payment-group,
+.order-type-group,
+.notes-group {
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
     .delivery-neighborhood-group select,
     .payment-group select,
@@ -567,6 +568,15 @@
         <option value="retirada">Retirar no local</option>
       </select>
     </div>
+<!-- Nome do cliente -->
+<div class="customer-name-group">
+  <label for="customerName">Seu nome:</label>
+  <input
+    id="customerName"
+    type="text"
+    placeholder="Ex.: João, Maria..."
+  />
+</div>
 
     <div class="payment-group">
       <label for="paymentMethod">Forma de pagamento:</label>
@@ -1193,10 +1203,17 @@
     const paymentMethod = getPaymentMethod();
     const notesEl = document.getElementById("orderNotes");
     const notes = notesEl ? notesEl.value.trim() : "";
+    const nameEl = document.getElementById("customerName");
+    const customerName = nameEl ? nameEl.value.trim() : "";
+
 
     let lines = [];
     lines.push("Olá! Gostaria de fazer o seguinte pedido:");
-    lines.push("");
+    if (customerName) {
+    lines.push(`Nome: ${customerName}`);
+   }
+   lines.push("");
+
 
     let subtotal = 0;
 
@@ -1260,8 +1277,29 @@
       lines.push(notes);
     }
 
+  const orderData = {
+  customerName,
+  paymentMethod,
+  notes,
+  items: cart.map(item => {
+    const unitPrice = getEffectiveUnitPrice(item);
+    return {
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: unitPrice,
+      totalItem: unitPrice * item.quantity
+    };
+  })
+};
+
+// envia para a planilha
+sendOrderToLog(orderData);
+
     const text = lines.join("\n");
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+   window.open(url, "_blank");
+
+
 
     // 🔹 Monta dados para registro na planilha
     const orderData = {
@@ -1358,3 +1396,4 @@ window.open(url, "_blank");
 
 </body>
 </html>
+
